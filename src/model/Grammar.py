@@ -4,7 +4,6 @@ def menuGrammar():
     print("2. Set of Terminals")
     print("3. Set of Productions")
     print("4. Set of Productions of a given non-terminal symbol")
-    print("5. Check if the grammar is regular")
 
 def readFromFile(filename):
     allProductions = []

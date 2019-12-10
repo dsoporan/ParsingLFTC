@@ -1,14 +1,15 @@
 from src.model.Grammar import readFromFile, menuGrammar
+from src.model.Parser import Parser, menuParser
 
 
 class Main:
     def main(self):
+        g = readFromFile("data/grammar.txt")
         print("Choose option: ")
         print("1. Grammar")
         print("2. Parser")
-        val = int(input(""))
+        val = int(input("Option: "))
         if val == 1:
-            g = readFromFile("data/grammar.txt")
             while 2:
                 menuGrammar()
                 newVal = input()
@@ -24,13 +25,15 @@ class Main:
                     for left,right in g.P:
                         if left == nonTerm:
                             print(left + " -> " + "|".join(right))
-                elif newVal == "5":
-                    if g.isRegular():
-                        print("The grammar is REGULAR")
-                    else:
-                        print("The grammar is NOT REGULAR")
                 else:
                     break
+        elif val == 2:
+            menuParser()
+            parsVal = int(input("Option:"))
+            if parsVal == 1:
+                parser = Parser(g)
+                parser.computeFirstSet()
+
 
 main = Main()
 main.main()
