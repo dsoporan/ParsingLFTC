@@ -3,11 +3,12 @@ from src.model.Grammar import readFromFile, menuGrammar
 
 class Main:
     def main(self):
+        print("Choose option: ")
         print("1. Grammar")
         print("2. Parser")
-        val = int(input("Choose option: "))
+        val = int(input(""))
         if val == 1:
-            g = readFromFile("C:\\Users\\Darian\\Desktop\\LFTC\\ParsingLFTC\\src\\data\\grammar.txt")
+            g = readFromFile("data/grammar.txt")
             while 2:
                 menuGrammar()
                 newVal = input()
