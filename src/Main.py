@@ -28,11 +28,14 @@ class Main:
                 else:
                     break
         elif val == 2:
+            parser = Parser(g)
             menuParser()
             parsVal = int(input("Option:"))
             if parsVal == 1:
-                parser = Parser(g)
                 parser.computeFirstSet()
+            elif parsVal == 2:
+                parser.computeFirstSet()
+                parser.computeFollowSet()
 
 
 main = Main()
