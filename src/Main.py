@@ -31,11 +31,17 @@ class Main:
             parser = Parser(g)
             menuParser()
             parsVal = int(input("Option:"))
-            if parsVal == 1:
-                parser.computeFirstSet()
-            elif parsVal == 2:
-                parser.computeFirstSet()
-                parser.computeFollowSet()
+            while(parsVal):
+                if parsVal == 1:
+                    parser.computeFirstSet()
+                elif parsVal == 2:
+                    parser.computeFirstSet()
+                    parser.computeFollowSet()
+                elif parsVal ==3:
+                    parser.computeFirstSet()
+                    parser.computeFollowSet()
+                    parser.makeTable()
+                parsVal = int(input("Option:"))
 
 
 main = Main()
