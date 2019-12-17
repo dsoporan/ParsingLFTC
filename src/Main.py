@@ -34,13 +34,15 @@ class Main:
             while(parsVal):
                 if parsVal == 1:
                     parser.computeFirstSet()
+                    print(parser.firstSet)
                 elif parsVal == 2:
                     parser.computeFirstSet()
                     parser.computeFollowSet()
-                elif parsVal ==3:
-                    parser.computeFirstSet()
-                    parser.computeFollowSet()
-                    parser.makeTable()
+                    print(parser.followSet)
+                elif parsVal == 3:
+                    inputSeq = input("Give a sequence each character separated by space: ")
+                    parser.productionString(inputSeq)
+                menuParser()
                 parsVal = int(input("Option:"))
 
 

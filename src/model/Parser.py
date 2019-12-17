@@ -6,6 +6,7 @@ def menuParser():
     print("Choose option:")
     print("1. FIRST")
     print("2. FOLLOW")
+    print("3. Computing Parsing Tree")
 
 class Parser:
     def __init__(self, grammar):
@@ -42,7 +43,7 @@ class Parser:
                 break
             index += 1
 
-        print(self.firstSet)
+        # print(self.firstSet)
 
     def computeFollowSet(self):
         self.followSet[self.grammar.S].append("E")
@@ -84,10 +85,10 @@ class Parser:
                 self.followSet[nonTerminal] = lis
 
 
-        for nt in self.grammar.N:
-            print(nt + " -> " )
-            print( self.followSet[nt] )
-            print( "\n")
+        # for nt in self.grammar.N:
+        #     print(nt + " -> " )
+        #     print( self.followSet[nt] )
+        #     print( "\n")
         # print(self.followSet)
 
     def getProdContStr(self,char,nonTerm):
@@ -137,12 +138,13 @@ class Parser:
         a=pred.keys()
         for e in a:
             if nonT in e and pred.get(e)==["E"]:
-                print(e)
-                return e
+                return 'E'
 
 
 
     def makeTable(self):
+        self.computeFirstSet()
+        self.computeFollowSet()
         cols=self.grammar.E
         cols.append("E")
         lines=self.grammar.N
@@ -166,13 +168,13 @@ class Parser:
                     for elem in firstl[len(firstl)-1]:
                         if elem==cols[c]:
                             left,e=self.getProdContStr(firstl[0][0],lines[l])
-                            A[l,c]=left + " -> " + e
+                            A[l,c]=e
                 else:
                     lastel=firstl[len(firstl)-1]
                     for i in range(0,len(lastel)-1):
                         if lastel[i]==cols[c]:
                             left,e=self.getProdContStr(firstl[0][i],lines[l])
-                            A[l,c]=left + "->" + e
+                            A[l,c]=e
                 if "E" in firstl[len(firstl)-1]:
                     followl=self.followSet[lines[l]]
                     for e in followl:
@@ -180,7 +182,100 @@ class Parser:
                             val=self.getAPred(preds,lines[l])
                             A[l,c]=val
 
-
-
         print(df)
+        print(A[0][2])
+        return A
+
+    def getProdNumber(self, left, right):
+        index = 1
+        for l, r in self.grammar.P:
+            if l == left and r == right:
+                return index
+            index += 1
+
+    def getProdOfNonterminal(self, nonTerminal):
+        lis = []
+        for left, right in self.grammar.P:
+            if left == nonTerminal:
+                lis.append(right)
+        return lis
+
+    def getAllTerminalsToComputeTable(self, nonTerminal):
+        allTerminals = []
+        fromFirst = self.firstSet[nonTerminal][-1]
+        if 'E' in fromFirst:
+            for term in fromFirst:
+                allTerminals.append(term)
+            for term in self.followSet[nonTerminal]:
+                allTerminals.append(term)
+        else:
+            for term in fromFirst:
+                allTerminals.append(term)
+        allTerminals = list(dict.fromkeys(allTerminals))
+        allTerminals = list(dict.fromkeys(allTerminals))
+        return allTerminals
+
+    def chooseProdThatSuits(self, prodForNonterminal, terminal):
+        for prod in prodForNonterminal:
+            if self.grammar.isTerminal(prod[0][0]) and prod[0][0] == terminal:
+                return prod
+        return prodForNonterminal[-1]
+
+
+    def productionString(self, inputSequence):
+        self.computeFirstSet()
+        self.computeFollowSet()
+        inputStack = inputSequence.split(' ')
+        workingStack = [self.grammar.S]
+        outputStack = []
+
+        numberingProd = {}
+        for nonTerminal in self.grammar.N:
+            allTerminals = self.getAllTerminalsToComputeTable(nonTerminal)
+            prodForNonterminal = self.getProdOfNonterminal(nonTerminal)
+            for terminal in allTerminals:
+                if len(prodForNonterminal) == 1:
+                    numberingProd[(nonTerminal, terminal)] = (prodForNonterminal[0], self.getProdNumber(nonTerminal, prodForNonterminal[0]))
+                else:
+                    production = self.chooseProdThatSuits(prodForNonterminal, terminal)
+                    numberingProd[(nonTerminal, terminal)] = (production, self.getProdNumber(nonTerminal, production))
+
+        print(numberingProd)
+
+        while len(workingStack) > 0:
+            elem = workingStack[0]
+            if self.grammar.isNonTerminal(elem):
+                del workingStack[0]
+                production = 0
+                number = 0
+                try:
+                    if len(inputStack) > 0:
+                        production, number = numberingProd[(elem, inputStack[0])]
+                    else:
+                        production, number = numberingProd[(elem, 'E')]
+                except:
+                    print("!Invalid input sequence! " + str(elem) + ", " + str(inputStack))
+                    break
+                splittedProduction = production[0].split(' ')
+                index = 0
+                for prod in splittedProduction:
+                    if prod != 'E':
+                        workingStack.insert(index, prod)
+                        index += 1
+                outputStack.append(number)
+            else:
+                if elem == inputStack[0]:
+                    del workingStack[0]
+                    del inputStack[0]
+                elif elem != 'E':
+                    print("!Invalid input sequence!")
+                    break
+                else:
+                    del workingStack[0]
+
+        print(outputStack)
+
+
+
+
 
